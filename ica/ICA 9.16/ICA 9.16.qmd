@@ -148,4 +148,157 @@ shape: How are values distributed along the observed range? Is the distribution 
 outliers: Are there any outliers, ie, outcomes that are unusually large/small?
 We must then translate this information into the context of our analysis, here hikes in the Adirondacks. Addressing each of the features in the above list, summarize below what you learned from the histogram, in context.
 
-Answer:the elevation is ranged from 3700 to 5500 feet, and it is distributed centrally arround 4500.
+Answer:the elevation is ranged from 3700 to 5500 feet, and it is distributed centrally(normally) arround 4500.
+
+Exercise 8: Building Histograms - Part 1
+2-MINUTE CHALLENGE: Thinking of the bar chart code, try to intuit what line you can tack on to the below frame of elevation to add a histogram layer. Don’t forget a +. If it doesn’t come to you within 2 minutes, no problem – all will be revealed in the next exercise.
+
+```{r}
+ggplot(hikes, aes(x = elevation))+
+geom_histogram()
+```
+Exercise 9: Building Histograms - Part 2
+Let’s build some histograms. Try each chunk below, one by one. In each chunk, make a comment about how both the code and the corresponding plot both changed.
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram()
+# the histogram has been added.
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white") 
+# the bars are separated by white lines
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", fill = "blue") 
+# the bar is filled with the color blue.
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white") +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+# the tag for both independent and dependent variable are added on the graph.
+```
+
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 1000) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+# the size of the bar is enlarged, the size of elevation for each bar increase to 1000.
+```
+
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 5) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+#the size of the bar is shorten the value of elevation (distance) for each bar decrease to 5, and the graph is too small to analyze.
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 200) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+# the size of each bar has a x value of 200.
+```
+Exercise 10: Histogram Follow-up
+What function added the histogram layer / geometry?
+Answer: geom_histogram().
+What’s the difference between color and fill?
+Answer: color is for the edges of the bar, and fill is for the inside color for the bar.
+Why does adding color = "white" improve the visualization?
+Answer: it create a clear visualization of how elevation is divided into different ranges by adding each bar with white lines.
+What did binwidth do?
+Answer: it decide how the elevation is divided into several parts for each bar.
+Why does the histogram become ineffective if the binwidth is too big (eg, 1000 feet)?
+Answer: the numbers of bar are just too small, and it will be meaningless to reveal the elevation only by two ranges of elevation.
+Why does the histogram become ineffective if the binwidth is too small (eg, 5 feet)?
+Answer: the range of each bar is too snall and it will be too hard to reveal the trend.
+
+Exercise 11: Density Plots
+Density plots are essentially smooth versions of the histogram. Instead of sorting observations into discrete bins, the “density” of observations is calculated across the entire range of outcomes. The greater the number of observations, the greater the density! The density is then scaled so that the area under the density curve always equals 1 and the area under any fraction of the curve represents the fraction of cases that lie in that range.
+
+Check out a density plot of elevation. Notice that the y-axis (density) has no contextual interpretation – it’s a relative measure. The higher the density, the more common are elevations in that range.
+```{r}
+ggplot(hikes, aes(x = elevation)) +
+  geom_density()
+```
+
+Questions
+
+INTUITION CHECK: Before tweaking the code and thinking back to geom_bar() and geom_histogram(), how do you anticipate the following code will change the plot?
+Answer: I think it make non-sense.
+```{r}
+# Write your code here
+ggplot(hikes, aes(x = elevation)) +
+  geom_density()
+geom_density(color = "blue")
+geom_density(fill = "orange")
+```
+
+
+TRY IT! Test out those lines in the chunk below. Was your intuition correct?
+Answer: YES
+
+
+
+Examine the density plot. How does it compare to the histogram? What does it tell you about the typical elevation, variability / range in elevations, and shape of the distribution of elevations within this range?
+Answer: it will be more hard to tell the exact times that for each elevation appears in density plot, but the range of elevation is clearer in density plot. the trend of the hikes changes is more prominent in density plot and we can see that it skewed to the right.
+
+Exercise 12: Density Plots vs Histograms
+The histogram and density plot both allow us to visualize the behavior of a quantitative variable: typical outcome, variability / range, shape, and outliers. What are the pros/cons of each? What do you like/not like about each?
+
+Answer: The histogram is clearer when looking at exact value of dependent variable, and density is clearer for revealing frequency. and they are not good at for the advantages they have toward each other. I will say density plot is more practical when doing distribution analysis.
+
+Exercise 13: Code = communication
+We obviously won’t be done until we talk about communication. Where the details can change, all code above has a similar general structure as follows:
+
+
+ggplot(___, aes(x = ___)) + 
+  geom___(color = "___", fill = "___") + 
+  labs(x = "___", y = "___")
+
+
+Though not necessary to the code working, it’s common, good practice to indent or tab the lines of code after the first line (counterexample below). Why?
+Answer: it tell us the code are not done, these parts are basically representing similar ideas.
+# YUCK
+ggplot(hikes, aes(x = elevation)) +
+geom_histogram(color = "white", binwidth = 200) +
+labs(x = "Elevation (feet)", y = "Number of hikes")
+
+Though not necessary to the code working, it’s common, good practice to put a line break after each + (counterexample below). Why?
+answer: each plus visually separates the layers of a ggplot, which makes the code easier to read, modify.
+# YUCK 
+ggplot(hikes, aes(x = elevation)) + geom_histogram(color = "white", binwidth = 200) + labs(x = "Elevation (feet)", y = "Number of hikes")
+
+Exercise 14: Practice
+Part a
+Practice your viz skills to learn about some of the variables in one of the following datasets:
+```{r}
+# Data on students in this class
+survey <- read.csv("https://hash-mac.github.io/ds112site-f26/data/survey.csv")
+```
+
+```{r}
+# World Cup data
+world_cup <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-11-29/worldcups.csv")
+```
+
+
+
+Part b
+Check out the RStudio Data Visualization cheat sheet to learn more features of ggplot.
+
+
