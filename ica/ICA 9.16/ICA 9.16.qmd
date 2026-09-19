@@ -90,7 +90,7 @@ Part a
 Reflect on the ggplot() code.
 
 What’s the purpose of the +? When do we use it?
-Answer: It is used to continue adding conditions
+Answer: It is used to continue adding conditions.
 We added the bars using geom_bar()? Why “geom”?
 Answer: because bar is the format which is included in geom.
 What does labs() stand for?
