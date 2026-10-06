@@ -139,7 +139,7 @@ leaflet(data = fave_places) |>
 In general:
 -   `addProviderTiles()` changes the base map.\
     To explore all available provider base maps, type `providers` in the console.
-    (Though some don't work :/)
+    (Though some don't work )
 
 -   Use `addMarkers()` or `addCircles()` to mark locations.
     Type `?addControl` into the console to pull up a help file which summarizes the aesthetics of these markers and how you can change them.
