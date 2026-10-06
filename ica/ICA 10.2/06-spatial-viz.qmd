@@ -61,8 +61,6 @@ Let's load [the data](../data/our_fave_places.csv) and map it!
 
 
 ```{r}
-#| eval: false
-
 fave_places <- read.csv("https://hash-mac.github.io/ds112site-f26/data/our_fave_places.csv")
 
 # Check it out
@@ -163,8 +161,8 @@ Let's focus on only those in Minnesota for now:
 
 ```{r}
 # Don't worry about the syntax
-starbucks_mn <- starbucks |>   
-  filter(Country == "US", State.Province == "MN")
+starbucks_mn <- starbucks |>
+  dplyr::filter(Country == "US", State.Province == "MN")
 ```
 
 Create a leaflet map of the Starbucks locations in Minnesota.
@@ -228,9 +226,9 @@ Run the chunks below to build up a new map.
 ```{r}
 # What does this code produce?
 # What geom are we using for the point map?
+library(tidyverse)
 ggplot(world_boundaries) + 
   geom_sf()
-
 ```
 
 ```{r}
@@ -292,6 +290,7 @@ ggplot(cma_boundaries) +
 ```{r}
 # Add the points
 # And zoom in
+library(ggthemes)
 ggplot(cma_boundaries) + 
   geom_sf() + 
   geom_point(
@@ -535,6 +534,7 @@ ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories))
 
 We used `geom_sf()` for point maps.
 What `geom` do we use for choropleth maps?
+Answer: using geom_map()
 
 ### ✏️ Map Counties with Choropleth
 
