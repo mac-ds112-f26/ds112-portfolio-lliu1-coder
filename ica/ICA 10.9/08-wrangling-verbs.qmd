@@ -188,9 +188,9 @@ elections_small |>
 ```{r}
 # You try
 # Define a variable that determines whether the Dem support was higher in 2020 than in 2016 (TRUE/FALSE)
-#elections_small |> 
-#  mutate(_____) |> 
-#  head()
+elections_small |>
+  mutate(dem_higher_20 = dem_pct_20 > dem_pct_16) |>
+  head()
 ```
 
 
@@ -202,15 +202,15 @@ Let's now combine these verbs into a pipe series!
 ### ✏️ Predict Pipe Output
 
 ::: {.callout-important title="Think then Run"}
-BEFORE running the below chunk, what do you think it will produce?
+get the data related to Wisconsin, and which the republican support is lower than democrat support. and then arrange all the data from big to small related to its total votes 20 variable.
 :::
 
 ```{r}
-# elections_small |> 
-#   filter(state_name == "Wisconsin",
-#          repub_pct_20 < dem_pct_20) |> 
-#   arrange(desc(total_votes_20)) |> 
-#   head()
+elections_small |>
+  filter(state_name == "Wisconsin",
+         repub_pct_20 < dem_pct_20) |>
+  arrange(desc(total_votes_20)) |>
+  head()
 ```
 
 ### ✏️ Swap `filter` & `arrange`
@@ -225,17 +225,18 @@ BEFORE trying, what do you think will happen if you change the order of filter a
 
 ```{r}
 # Now try it. Change the order of filter and arrange below.
-# elections_small |> 
-#   filter(state_name == "Wisconsin",
-#          repub_pct_20 < dem_pct_20) |> 
-#   arrange(desc(total_votes_20)) |> 
-#   head()
+elections_small |>
+  arrange(desc(total_votes_20)) |>
+  filter(state_name == "Wisconsin",
+         repub_pct_20 < dem_pct_20) |>
+  head()
 ```
 
 ### ✏️ Explain Filtering First
 
 Whether or not the order of `filter()` and `arrange()` changes the results, what is one *advantage* of filtering before arranging?
-Answer
+
+Answer: visually it is more easy to mis lead with rows unrelated.
 
 ### ✏️ Predict `mutate` Pipe
 
@@ -244,10 +245,10 @@ BEFORE running the below chunk, what do you think it will produce?
 :::
 
 ```{r}
-# elections_small |> 
-#   filter(state_name == "Delaware") |> 
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
-#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+elections_small |>
+  filter(state_name == "Delaware") |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+  select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
 ```
 
 ### ✏️ Swap `mutate` & `select`
@@ -262,10 +263,10 @@ BEFORE trying, what do you think will happen if you change the order of mutate a
 
 ```{r}
 # Now try it. Change the order of mutate and select below.
-# elections_small |> 
-#   filter(state_name == "Delaware") |> 
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
-#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+elections_small |>
+  filter(state_name == "Delaware") |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+select(county_name, repub_pct_20, dem_pct_20, repub_win_20) 
 ```
 
 
@@ -280,7 +281,10 @@ We've now learned 4 of the 6 wrangling verbs: `select`, `filter`, `mutate`, `arr
 Show just the counties in Minnesota and their Democratic 2020 vote percentage, from highest to lowest. Your answer should have just 2 columns.
 
 ```{r}
-
+elections_small |> 
+  filter(state_name == "Minnesota") |> 
+  select(county_name, dem_pct_20) |> 
+  arrange(desc(dem_pct_20))
 ```
 
 ### ✏️ Build `mn_wi`
@@ -290,10 +294,13 @@ Create a new dataset named `mn_wi` that sorts the counties in Minnesota and Wisc
 ```{r}
 # Define the dataset
 # Only store the results once you're confident that they're correct
-
-
+mn_wi <- elections_small |> 
+  filter(state_name %in% c("Minnesota", "Wisconsin")) |> 
+  select(state_name, county_name, dem_pct_20, dem_pct_16) |>
+  mutate(dem_change = dem_pct_20 - dem_pct_16) |> 
+  arrange(dem_change)
 # Check out the first 6 rows to confirm your results
-
+head(mn_wi)
 ```
 
 ### ✏️ Plot Dem Change
@@ -301,7 +308,8 @@ Create a new dataset named `mn_wi` that sorts the counties in Minnesota and Wisc
 Construct and discuss a plot of the county-level change in Democratic vote percent in 2020 vs 2016, and how this differs between Minnesota and Wisconsin.
 
 ```{r}
-
+ggplot(mn_wi, aes(y = dem_change, x = state_name)) + 
+  geom_boxplot()
 ```
 
 
@@ -315,21 +323,21 @@ Construct and discuss a plot of the county-level change in Democratic vote perce
 Let's talk about the last 2 verbs. `summarize()` (or equivalently `summarise()`) takes an entire data frame as input and outputs a single row with one or more summary statistics. For each chunk below, indicate what the code does.
 
 ```{r}
-# What does this do?
-# elections_small |> 
-#   summarize(median(repub_pct_20))
+# Calculate the median Repub vote percentage in 2020 in every county.
+elections_small |> 
+  summarize(median(repub_pct_20))
 ```
 
 ```{r}
-# What does this do?
-# elections_small |> 
-#   summarize(median_repub = median(repub_pct_20))
+# name it "median_repub"
+elections_small |> 
+  summarize(median_repub = median(repub_pct_20))
 ```
 
 ```{r}
-# What does this do?
-# elections_small |> 
-#   summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
+# name the results
+elections_small |> 
+  summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
 ```
 
 
@@ -384,7 +392,10 @@ Each of the next 3 exercises is a challenge. If you get really stuck, use the se
 Sort the *states* from the most to least total votes cast in 2020.
 
 ```{r}
-
+elections_small |> 
+  group_by(state_name) |> 
+  summarize(total = sum(total_votes_20)) |> 
+  arrange(desc(total))
 ```
 
 ```{r}
@@ -398,7 +409,12 @@ Sort the *states* from the most to least total votes cast in 2020.
 In 2020, what was the total number of votes for the Democratic candidate and the total number of votes for the Republican candidate in each *state*?
 
 ```{r}
-
+elections_small |> 
+  mutate(dem_votes_20 = round(total_votes_20 * dem_pct_20 / 100), 
+         repub_votes_20 = round(total_votes_20 * repub_pct_20 / 100)) |> 
+  group_by(state_name) |> 
+  summarize(dem_total = sum(dem_votes_20),
+            repub_total = sum(repub_votes_20))
 ```
 
 ```{r}
@@ -413,7 +429,13 @@ In 2020, what was the total number of votes for the Democratic candidate and the
 What states did the Democratic candidate win in 2020?
 
 ```{r}
-
+elections_small |> 
+  mutate(dem_votes_20 = round(total_votes_20 * dem_pct_20 / 100), 
+        repub_votes_20 = round(total_votes_20 * repub_pct_20 / 100)) |> 
+  group_by(state_name) |> 
+  summarize(dem_total = sum(dem_votes_20),
+        repub_total = sum(repub_votes_20)) |> 
+  filter(dem_total > repub_total)
 ```
 
 ```{r}
@@ -438,7 +460,8 @@ You can find a codebook [here](https://github.com/rfordatascience/tidytuesday/tr
 In what years did Brazil win the World Cup?
 
 ```{r}
-
+world_cup |> 
+  filter(winner == "Brazil")
 ```
 
 
@@ -447,16 +470,19 @@ In what years did Brazil win the World Cup?
 What were the 6 World Cups with the highest attendance?
 
 ```{r}
-
+world_cup |> 
+  arrange(desc(attendance)) |> 
+  head()
 ```
 
 
 ### ✏️ Plot Goals Scored
 
 Construct a univariate plot of `goals_scored` (no wrangling necessary). This provides a visual summary of how the number of `goals_scored` varies from World Cup to World Cup.
-
 ```{r}
-
+ggplot(world_cup, aes(x = goals_scored)) +
+geom_histogram(color = "red", binwidth = 10
+               )
 ```
 
 
@@ -465,7 +491,10 @@ Construct a univariate plot of `goals_scored` (no wrangling necessary). This pro
 Let's follow up the plot with some more precise numerical summaries. Calculate the min, median, and max number of `goals_scored` across all World Cups. NOTE: Visually compare these numerical summaries to what you observed in the plot.
 
 ```{r}
-
+world_cup |> 
+  summarize(min_goals = min(goals_scored),
+  median_goals = median(goals_scored),
+  max_goals = max(goals_scored))
 ```
 
 
@@ -474,7 +503,9 @@ Let's follow up the plot with some more precise numerical summaries. Calculate t
 Construct a bivariate plot of how the number of `goals_scored` in the World Cup has changed over the years. No wrangling necessary.
 
 ```{r}
-
+ggplot(world_cup, aes(x = year, y = goals_scored)) + 
+geom_point() + 
+  geom_line()
 ```
 
 
@@ -483,7 +514,11 @@ Construct a bivariate plot of how the number of `goals_scored` in the World Cup 
 Our above summaries might be a bit misleading. The number of games played at the World Cup varies. Construct a bivariate plot of how the typical number of goals per game has changed over the years.
 
 ```{r}
-
+per_game_data <- world_cup |> 
+  mutate(goals_per_game = goals_scored / games)
+ggplot(per_game_data, aes(x = year, y = goals_per_game)) + 
+  geom_point() + 
+  geom_line()
 ```
 
 
@@ -491,3 +526,4 @@ Our above summaries might be a bit misleading. The number of games played at the
 ### ✏️ Practice on Your Data
 
 Return to the TidyTuesday data you're using in Homework 3. Use your new wrangling skills to play around. What new insights can you gain?!
+Answer: what we can do is that we arrange new data variable with wrangling the data before creating visualization and then we can get new insights.
