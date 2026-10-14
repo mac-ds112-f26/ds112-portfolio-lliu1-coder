@@ -1,0 +1,52 @@
+---
+title: "Extra research (reviewing multivariate　wrangling) "
+format: html
+---
+```{r}
+library(tidyverse)
+#import data
+ielts <- read_csv(
+  "https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2026/2026-08-18/demo_by_first_language.csv"
+)
+#data cleaning
+glimpse(ielts)
+ielts_clean <- ielts |>
+  filter(
+    !is.na(language),
+    !is.na(band),
+    !is.na(percent),
+    !is.na(type)
+  )
+glimpse(ielts_clean)
+```
+```{r}
+head(ielts)
+str(ielts)
+```
+**1. RQ1: What is the overall distribution of IELTS scores?**
+```{r}
+# Bar chart
+ielts_clean |>
+  group_by(band) |>
+  summarise(avg_percent = mean(percent)) |>
+  ggplot(aes(x = band, y = avg_percent)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    title = "Distribution of IELTS Scores",
+    x = "IELTS Band",
+    y = "Average Percentage"
+  ) +
+  theme_minimal()
+```
+**Research Question 1 Findings**
+::: {.callout-tip title="Score distribution"}
+The distribution of IELTS scores is slightly skewed to the left, with the highest average percentages occurring at bands 6.0 and 6.5 (around 18%). Most scores are concentrated between 5.5 and 7.5, while extremely low and high scores are relatively uncommon. The average percentage gradually increases from lower bands, peaks at 6.0–6.5, and then decreases toward higher bands. Overall, the results suggest that intermediate IELTS band levels are more common than extreme scores across the groups represented in the dataset.
+:::
+
+
+2. RQ2: How do IELTS score distributions differ across first-language groups?
+3. RQ3: Do first-language groups differ in the proportions of test takers achieving low, medium, and high IELTS scores?
+4. RQ4: How do the numbers of test takers in different score categories compare across first-language groups?
+5. RQ5: Do IELTS score patterns across first-language groups differ between Academic and General Training tests?
+6. RQ6: How do average IELTS scores relate to the number of test takers across first-language groups and test types?
+
