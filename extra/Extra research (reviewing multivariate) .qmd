@@ -18,15 +18,13 @@ ielts_clean <- ielts |>
     !is.na(type)
   )
 glimpse(ielts_clean)
-summary(ielts_clean$percent)
 ```
 ```{r}
 head(ielts)
 str(ielts)
 ```
-**1. RQ1: What is the overall distribution of IELTS scores?**
+**1. RQ1: What is the overall distribution of IELTS scores?** 【Which I might put question in front tobe the general question.】
 ```{r}
-# Bar chart
 #| label: fig-ielts-distribution
 #| fig-cap: "Distribution of IELTS band scores based on the average percentage at each band."
 #| fig-alt: "Bar chart showing the average percentage for each IELTS band. The distribution peaks at bands 6.0 and 6.5, both around about 17% to 18%, while lower and higher bands have smaller percentages."
@@ -47,7 +45,7 @@ The distribution of IELTS scores is slightly skewed to the left, with the highes
 
 
 
-2. RQ2: How do IELTS score distributions differ across first-language groups (Chinese, Japanese, Korean,French, Arab)?
+**2. RQ2: How do IELTS score distributions differ across first-language groups (Chinese, Japanese, Korean,French, Arab)?**
 ```{r}
 #| label: fig-ielts-language
 #| fig-cap: "Comparison of IELTS score distributions across five first-language groups."
@@ -79,8 +77,10 @@ ielts_clean |>
       band %in% c("7", "7.5", "8", "8.5", "9") ~ "High"
     )
   ) |>
+  group_by(language, type, year, score_category) |>
+  summarise(category_percent = sum(percent), .groups = "drop") |>
   group_by(language, score_category) |>
-  summarise(avg_percent = mean(percent) * 100) |>
+  summarise(avg_percent = mean(category_percent), .groups = "drop") |>
   ggplot(aes(x = language, y = avg_percent,
              fill = score_category)) +
   geom_bar(stat = "identity", position = "fill") +
@@ -94,7 +94,39 @@ ielts_clean |>
 ```
 
 **Research question2 findings**
-IELTS score distributions vary across the five first-language groups. Chinese and Korean speakers show similar distributions, with the highest average percentages at band 6.0 (approximately 21% and 22%, respectively). Japanese and Arabic speakers have distributions concentrated at relatively lower bands, especially between 5.0 and 6.0. In contrast, French speakers have a distribution shifted toward higher scores, with relatively large percentages between bands 6.0 and 7.5. Overall, these patterns suggest that IELTS score distributions differ across first-language groups, with French speakers showing a greater concentration in higher score bands.
+IELTS score distributions vary across the five first-language groups. Chinese and Korean speakers show similar distributions, the highest average percentages at band 6.0 (approximately 21% and 22%, respectively). Japanese and Arabic speakers have distributions concentrated at relatively lower bands, especially between 5.0 and 6.0. French speakers have a distribution shifted toward higher scores, the relatively large percentages between bands 6.0 and 7.5.
+
+**3. RQ3: Which first-language groups have the highest proportions of IELTS scores of 7.0 or above, and how does this differ by test type?**
+
+```{r}
+#| fig-cap: "Distribution of IELTS high-score percentages across language groups, test types, and reporting periods."
+#| fig-alt: "Histogram showing the distribution of percentages of IELTS scores of 7.0 or above across language groups, test types, and reporting periods."
+
+ielts_clean |>
+  filter(band %in% c("7", "7.5", "8", "8.5", "9")) |>
+  group_by(language, type, year) |>
+  summarise(high_percent = sum(percent) * 100,
+            .groups = "drop") |>
+  ggplot(aes(x = high_percent)) +
+  geom_histogram(binwidth = 5, fill = "steelblue",
+                 color = "white") +
+  labs(
+    title = "Distribution of IELTS High-Score Percentages",
+    x = "Percentage of Scores 7.0+ (%)",
+    y = "Number of observations(Number of Language–Test–Year Groups)"
+  ) +
+  theme_minimal()
+```
+**research question 3 finding:**
+
+
+The histogram shows that most IELTS high-score percentages are concentrated between 15% and 50%, with the highest frequency occurring at 35%. The distribution is slightly right-skewed, small number of observations have high-score percentages over 55% to 60%, with a few reaching nearly 90%. The results suggest that the proportion of IELTS scores of 7.0 or above varies considerably across language groups, test types, and reporting periods.
+
+
+
+
+
+
 
 
 
