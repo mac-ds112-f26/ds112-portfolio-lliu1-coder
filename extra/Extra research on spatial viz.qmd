@@ -1,0 +1,86 @@
+---
+title: "Extra research on spatial viz"
+format: html
+---
+Datasource:
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/csv.php
+
+```{r}
+library(tidyverse)
+earthquakes <- read_csv(
+  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.csv"
+)
+glimpse(earthquakes)
+```
+Research Question 1
+How are magnitude 4.5+ earthquakes distributed geographically around the world, and how do their magnitudes and depths vary?
+
+```{r}
+#| fig-cap: "Global distribution of magnitude 4.5 and above earthquakes recorded by the USGS during the past 30 days. Each point represents an earthquake, and darker colors indicate higher magnitudes."
+#| fig-alt: "A world map showing the locations of magnitude 4.5 and above earthquakes recorded during the past 30 days. Orange dots represent individual earthquakes, with darker colors indicating higher magnitudes. Earthquakes are concentrated around the Pacific Ocean, especially near Japan, Indonesia, and the western coasts of the Americas."
+library(tidyverse)
+library(rnaturalearth)
+world_boundaries <- ne_countries(returnclass = "sf")
+ggplot(world_boundaries) +
+  geom_sf(fill = "gray90", color = "white") +
+  geom_point(
+    data = earthquakes,
+    aes(x = longitude, y = latitude, color = mag),
+    alpha = 0.7,
+    size = 1.5
+  ) +
+  scale_color_gradient(
+    low = "orange",
+    high = "darkred"
+  ) +
+  labs(
+    title = "Global Earthquake Locations and Magnitudes",
+    color = "Magnitude"
+  ) +
+  theme_minimal()
+```
+
+Research Question2
+What is the distribution of earthquake magnitudes?
+```{r}
+#| fig-cap: "Distribution of earthquake magnitudes of 4.5 and above"
+#| fig-alt: "A world map showing the spatial concentration of magnitude 4.5 and above earthquakes during the past 30 days. Dark blue contour lines represent earthquake density, with closely nested contours indicating areas of higher concentration, particularly around the Pacific region."
+
+earthquakes |>
+  ggplot(aes(x = mag)) +
+  geom_histogram(
+    binwidth = 0.2,
+    fill = "steelblue",
+    color = "white"
+  ) +
+  labs(
+    title = "Distribution of Earthquake Magnitudes",
+    x = "Magnitude",
+    y = "Number of Earthquakes"
+  ) +
+  theme_minimal()
+```
+Research Question3
+How does the spatial concentration of magnitude 4.5+ earthquakes vary across different regions of the world?
+```{r}
+#| fig-cap: "Global concentration of magnitude 4.5+ earthquakes during the past 30 days."
+#| fig-alt: "A world map with blue contour lines showing areas of higher earthquake concentration."
+
+ggplot(world_boundaries) +
+  geom_sf(fill = "gray90", color = "white") +
+  geom_density_2d(
+    data = earthquakes,
+    aes(x = longitude, y = latitude),
+    color = "darkblue",
+    linewidth = 0.6
+  ) +
+  labs(
+    title = "Global Earthquake Concentration",
+    subtitle = "Magnitude 4.5+ | Past 30 Days",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+
