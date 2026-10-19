@@ -1,0 +1,32 @@
+---
+title: "Extra research project on Capital Income distributed"
+format: html
+---
+
+RQ1：How Per capital income distributed across United States in?
+```{r}
+library(tidyverse)
+library(maps)
+
+states <- as_tibble(state.x77) |>
+  mutate(region = tolower(state.name))
+
+states_map <- map_data("state")
+
+ggplot(states, aes(map_id = region)) +
+  geom_map(
+    aes(fill = Income),
+    map = states_map,
+    color = "white"
+  ) +
+  expand_limits(
+    x = states_map$long,
+    y = states_map$lat
+  ) +
+  labs(
+    title = "Per Capita Income Across U.S. States 1974",
+    fill = "Income ($)"
+  ) +
+  theme_minimal()
+```
+Findings: he map shows that income was quite different across U.S. states in 1974. States in the Northeast generally had higher incomes, while many Southern states, like Mississippi and Alabama, had lower incomes. We can also see that some Western states had relatively high incomes. Overall, where people lived seemed to make a difference in their income levels.
