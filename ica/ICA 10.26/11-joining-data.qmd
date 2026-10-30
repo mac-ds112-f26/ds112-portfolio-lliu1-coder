@@ -37,6 +37,7 @@ To connect the course enrollments to the students' courses, try to do a `left_jo
 #| eval: false  # keep this false since it will produce an error
 
 students_2 |>
+  left_join()
   cross_join(enrollments_2)
 ```
 
