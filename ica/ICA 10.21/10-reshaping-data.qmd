@@ -18,12 +18,13 @@ head(sleep_wide)
 ```
 
 What are the units of observation in `sleep_wide`?
+Answer: subjects/(people)
 
 ### ✏️ Sketch Long Data
 
 Suppose I ask you to plot each subject's reaction time (y-axis) vs the number of days of sleep restriction (x-axis). "Sketch" out in words what the first few rows of the data need to look like in order to do this. It might help to think about what you'd need to complete the plotting frame:
 
-`ggplot(___, aes(y = ___, x = ___, color = ___))`
+`ggplot(___, aes(y = reaction, x = day, color = subject))`
 
 ### ✏️ Choose Reshape Tool
 
@@ -32,7 +33,7 @@ How can you obtain the dataset you sketched in ✏️ Sketch Long Data?
 -   just using `sleep_wide`
 -   `pivot_longer()`
 -   `pivot_wider()`
-
+Answer: Using Pivot_longer()
 
 ### ✏️ Pivot Longer
 
@@ -48,8 +49,8 @@ Use `pivot_longer()` to create the long-format dataset above. Show the first 3 l
 
 ```{r}
 # For cols, try 2 approaches: using - and starts_with
-# ___ |>
-#   pivot_longer(cols = ___, names_to = "___", values_to = "___")
+sleep_wide |>
+  pivot_longer(cols = -Subject, names_to = "day", values_to = "reaction_time")
 ```
 
 ### ✏️ Use `names_prefix`
@@ -76,7 +77,8 @@ Follow-up:
 Using `sleep_long`, construct a line plot of reaction time vs day for each subject. This will look goofy no matter what you do. Why? HINT: look back at `head(sleep_long)`. What class or type of variables are `Subject` and `day`? What do we *want* them to be?
 
 ```{r}
-
+ggplot(sleep_long, aes(y = reaction_time, x = day, color = Subject)) +
+  geom_line()
 ```
 
 
@@ -100,7 +102,8 @@ head(sleep_long)
 *Now* make a line plot of reaction time by day for each subject. Put these all on the same frame.
 
 ```{r}
-
+ggplot(sleep_long, aes(y = reaction_time, x = day, color = Subject)) +
+  geom_line()
 ```
 
 
@@ -109,7 +112,9 @@ head(sleep_long)
 Make a line plot of reaction time by day for each subject. Put these all on separate frames (one per subject).
 
 ```{r}
-
+ggplot(sleep_long, aes(y = reaction_time, x = day, color = Subject)) +
+  geom_line() +
+  facet_wrap(~ Subject)
 ```
 
 ### ✏️ Summarize Sleep Plots
@@ -117,8 +122,9 @@ Make a line plot of reaction time by day for each subject. Put these all on sepa
 Summarize what you learned from the plots. For example:
 
 -   What's the general relationship between reaction time and sleep?
+Answer: there is a relatively positive relationship between days recorded and reactiontime of sleeping, meaning more days each participant have, the sleep reaction time increase, meaning that their sleeping quality decrease.
 -   Is this the same for everybody? What differs?
-
+not the same, the shape are different.Some subjects seem to be more impacted than others by lack of sleep, and some tend to have faster/slower reaction times in general.
 
 
 ### ✏️ Pivot Wider
@@ -128,9 +134,9 @@ Make the data *wide* again, with each day becoming its own column.
 Adjust the code below. What don't you like about the column labels?
 
 ```{r}
-# sleep_long |>
-#   pivot_wider(names_from = ___, values_from = ___) |>
-#   head()
+ sleep_long |>
+   pivot_wider(names_from = day, values_from = reaction_time) |>
+   head()
 ```
 
 ### ✏️ Name Wide Columns
@@ -138,9 +144,9 @@ Adjust the code below. What don't you like about the column labels?
 Using your intuition, adjust your code from ✏️ Pivot Wider to name the reaction time columns "day_0", "day_1", etc.
 
 ```{r}
-# sleep_long |>
-#   pivot_wider(names_from = ___, values_from = ___, names_prefix = "___") |>
-#   head()
+ sleep_long |>
+   pivot_wider(names_from = day, values_from = reaction_time, names_prefix = "day_") |>
+   head()
 ```
 
 
