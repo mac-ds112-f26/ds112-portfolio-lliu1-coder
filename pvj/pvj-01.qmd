@@ -2,4 +2,85 @@
 title: "Personal Visualization Journey"
 ---
 
-Add content here
+```{r}
+library(tidyverse)
+library(lubridate)
+library(forcats)
+library(leaflet)
+
+moments <- read_csv("~/Downloads/wechat_moments_2024_2026_low_frequency.csv")
+```
+```{r}
+moments |>
+  group_by(country) |>
+  summarise(mean_likes = mean(likes)) |>
+  ggplot(aes(x = country, y = mean_likes)) +
+  geom_col() +
+  labs(
+    title = "Average WeChat Moments Likes by Country",
+    x = "Country",
+    y = "Average Number of Likes",
+    fill = "Country"
+  ) +
+    theme_minimal()
+```
+```{r}
+moments |>
+  mutate(
+    content_category = fct_reorder(
+      content_category, likes, .fun = mean
+    )
+  ) |>
+  ggplot(aes(x = content_category, y = likes)) +
+  geom_boxplot()
+  labs(
+    title = "Distribution of Likes by Content Category",
+    x = "Content Category",
+    y = "Number of Likes",
+    fill = "Content Category"
+  ) +
+    theme_minimal()
+```
+```{r}
+#| label: fig-wechat-spatial
+#| fig-cap: "Spatial Distribution of WeChat Moments (2024–2026)"
+leaflet(moments) |>
+  addTiles() |>
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude,
+    radius = 5,
+    popup = ~location
+  )
+```
+
+```{r}
+moments |>
+  mutate(
+    date = as.Date(date),
+    year = factor(format(date, "%Y")),
+    month = as.integer(format(date, "%m"))
+  ) |>
+  group_by(year, month) |>
+  summarise(
+    avg_likes = mean(likes),
+    .groups = "drop"
+  ) |>
+  ggplot(aes(
+    x = month,
+    y = avg_likes,
+    color = year,
+    group = year
+  )) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = 1:12) +
+  labs(
+    title = "Average WeChat Moments Likes by Month",
+    x = "Month",
+    y = "Average Number of Likes",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
+
