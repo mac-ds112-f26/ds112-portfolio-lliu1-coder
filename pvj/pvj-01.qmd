@@ -10,20 +10,7 @@ library(leaflet)
 
 moments <- read_csv("~/Downloads/wechat_moments_2024_2026_low_frequency.csv")
 ```
-```{r}
-moments |>
-  group_by(country) |>
-  summarise(mean_likes = mean(likes)) |>
-  ggplot(aes(x = country, y = mean_likes)) +
-  geom_col() +
-  labs(
-    title = "Average WeChat Moments Likes by Country",
-    x = "Country",
-    y = "Average Number of Likes",
-    fill = "Country"
-  ) +
-    theme_minimal()
-```
+
 ```{r}
 moments |>
   mutate(
@@ -41,6 +28,8 @@ moments |>
   ) +
     theme_minimal()
 ```
+
+
 ```{r}
 #| label: fig-wechat-spatial
 #| fig-cap: "Spatial Distribution of WeChat Moments (2024–2026)"
@@ -83,4 +72,48 @@ moments |>
   ) +
   theme_minimal()
 ```
+```{r}
+moments |>
+  mutate(
+    year = factor(format(as.Date(date), "%Y")),
+    weekend = if_else(
+      as.POSIXlt(as.Date(date))$wday %in% c(0, 6),
+      "Weekend",
+      "Weekday"
+    )
+  ) |>
+  count(year, country, weekend) |>
+  ggplot(aes(
+    x = country,
+    y = n,
+    fill = weekend
+  )) +
+  geom_col(position = "dodge") +
+  facet_wrap(~year) +
+  labs(
+    title = "WeChat Moments Posting Frequency by Country and Day Type",
+    subtitle = "Comparing Weekday and Weekend Posts Across Years",
+    x = "Country",
+    y = "Number of Posts",
+    fill = "Day Type"
+  ) +
+  theme_minimal()
+```
+
+## Peer Feedback
+
+### Comment by Hazel
+
+
+An interesting topic selected! Love the way you visualized the changing monthly pattern of likes received across the three years. The choice of plots are suitable for the relationship you want to explore.
+
+There seems to be some missing data points in the fourth graph for some month included. The pattern of change can be shown clearer if these missing points are fixed.
+
+It could be better for the readers’ understanding if you could provide brief description of each graphs and their general features, so that the visualization process can become more coherent and interconnected.
+
+### Comment by Jiwei Liu
+
+I really like how you used different types of visualizations to explore your WeChat Moments data! The boxplot makes it easy to compare likes across content categories, and the line graph clearly shows how likes change over time. I also like how you separated the bar chart by year and used different colors for weekdays and weekends.
+
+One suggestion is to add a title to the boxplot. For the bar chart, it might be helpful to keep the bar widths consistent even when a country has no weekend posts. Leaving an empty space for the weekend bar would make it easier to compare across countries. It might also be helpful to clarify whether the empty space represents zero posts or missing data to avoid confusion.
 
