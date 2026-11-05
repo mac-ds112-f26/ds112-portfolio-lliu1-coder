@@ -1,0 +1,291 @@
+---
+title: "9.21 ICA"
+format: html
+---
+```{r}
+# Load data
+elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
+```
+
+```{r}
+# Check it out
+head(elections)
+```
+Exercise 0: Review
+Part a
+How many, or roughly what percent, of the 3000+ counties did the Republican candidate win in 2020?
+
+Take a guess.
+Then make a plot of the winner variable.
+```{r}
+library(tidyverse)
+ggplot(elections,aes(x=winner_20))+
+geom_bar(color = "orange", fill = "blue")
+```
+
+
+Then discuss what follow-up questions you might have (and that our data might help us answer).
+Part b
+The repub_pct_20 variable provides more detail about the Republican support in each county. Construct a plot of repub_pct_20.
+```{r}
+ggplot(elections, aes(x = repub_pct_20)) + 
+  geom_histogram(color = "white")
+```
+
+
+Notice that the distribution of Republican support from county to county is slightly left skewed or negatively skewed.
+
+What follow-up questions do you have?
+
+Exercise 1: Quantitative vs Quantitative Intuition Check
+ImportantBe Quick
+Don’t spend more than 3 minutes on this!
+Below is a scatterplot of the Republican support in 2020 vs 2016. Notice that:
+
+both variables are quantitative and get their own axes
+the response variable is on the y-axis, demonstrating how repub_pct_20 might be predicted by repub_pct_16, not vice versa
+Try to replicate this using ggplot(). Think:
+
+What info do you need to set up the canvas?
+Answer: the density, the x & y labels
+What geometric layer (geom_???) might add these dots / points for each county? We haven’t learned this yet, just take some guesses.
+Answer: plot
+
+Exercise 2: 2 Quantitative Variables
+Run each chunk below to build up a a scatterplot of repub_pct_20 vs repub_pct_16 with different glyphs representing each county. Address or think about any prompts in the comments (#).
+```{r}
+# Set up the plotting frame
+# How does this differ from the frame for our histogram of repub_pct_20 alone?
+# two variables are included within the graph, but histogram only have one
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16))
+```
+
+```{r}
+# Add a layer of points for each county
+# Take note of the geom!
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point()
+
+```
+
+```{r}
+# Change the shape of the points
+# What happens if you change the shape to another number?
+# The shape & the size of the points changes when we change the shape to another number
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point(shape = 5)
+
+```
+
+
+```{r}
+# Modify the code to make the points "orange"
+# NOTE: Try to anticipate if "color" or "fill" will be useful here. Then try both.
+# neither of them works
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point()
+```
+
+
+```{r}
+# Add a layer that represents each county by the state it's in
+# Take note of the geom and the info it needs to run!
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_text(aes(label = state_abbr))
+```
+Exercise 3: Reflect
+Summarize the relationship between the Republican support in 2020 and 2016. Be sure to comment on:
+
+the strength of the relationship: weak/moderate/strong
+the direction of the relationship: positive/negative
+outliers, ie, in what state do counties deviate from the national trend? Any ideas why this might be the case?
+
+Answer: The strength of the model is relatively strong since there are less outliers, the repub_pct_16 variable and repub_pct_20 has a positive relationship.
+
+Exercise 4: Visualizing Trend
+The trend of the relationship between repub_pct_20 and repub_pct_16 is clearly positive and (mostly) linear. We can highlight this trend by adding a model “smooth” to the plot:
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point() +
+  geom_smooth()
+```
+
+
+Part a
+Construct a new plot that contains the model smooth but does not include the individual point glyphs.
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_smooth()
+```
+
+Part b
+By default, geom_smooth() adds a smooth, localized model line. To examine the “best” linear model, we can specify method = "lm". It’s pretty similar in this example.
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+Exercise 5: Your Turn
+To examine how the 2020 results are related to some county demographics, construct scatterplots of repub_pct_20 vs median_rent, and repub_pct_20 vs median_age. Summarize the relationship between these two variables and comment on which is the better predictor of repub_pct_20, median_rent or median_age.
+```{r}
+# Scatterplot of repub_pct_20 vs median_rent
+ggplot(elections, aes(y = repub_pct_20, x = median_rent)) +
+  geom_point()+
+  geom_smooth()
+```
+
+
+
+
+```{r}
+# Scatterplot of repub_pct_20 vs median_age
+ggplot(elections, aes(y = repub_pct_20, x = median_age)) +
+  geom_point()+
+  geom_smooth()
+```
+Exercise 6: A Sad Scatterplot
+Next, let’s explore the relationship between a county’s 2020 Republican support repub_pct_20 and the historical political trends in its state. In this case repub_pct_20 is quantitative, but historical is categorical. Explain why a scatterplot might not be an effective visualization for exploring this relationship. (What questions does / doesn’t it help answer?)
+Answer: it can hardly tell the exact size of the data-set, also the trend of distribution is hard to be revealed by points because there are just too many points.
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_point()
+```
+
+
+Exercise 7: Quantitative vs Categorical: Violins & Boxes
+Though the above scatterplot did group the counties by historical category, it’s nearly impossible to pick out meaningful patterns in 2020 Republican support in each category. Let’s try adding 2 different geom layers to the frame:
+
+```{r}
+# Side-by-side violin plots
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_violin()
+
+```
+
+```{r}
+# Side-by-side boxplots (defined below)
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_boxplot()
+```
+
+Box plots are constructed from five numbers: the minimum, 25th percentile, median, 75th percentile, and maximum value of a quantitative variable:
+
+
+
+REFLECT:
+
+Summarize what you’ve learned about the 2020 Republican county-level support within and between red/purple/blue states.
+
+Answer: Red states get the most support with a median of 75. purple states get support with a median of 62.5, and the blue state get the least support.
+
+xercise 8: Quantitative vs Categorical: Intuition Check
+ImportantBe Quick
+Don’t spend more than 3 minutes on this!
+We can also visualize the relationship between repub_pct_20 and historical using our familiar density plots. In the plot below, notice that we simply created a separate density plot for each historical category. The plot itself is “bad” but we’ll fix it below. Try to adjust the code chunk below, which starts with a density plot of repub_pct_20 alone, to re-create this image.
+
+
+
+ggplot(elections, aes(x = repub_pct_20)) +
+  geom_density()
+
+
+Exercise 9: Quantitative vs Categorical: Density Plots
+Work through the chunks below and address the comments therein.
+
+```{r}
+# Name two "bad" things about this plot
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density()
+# the histogram is overlapping.
+# the colors doesn't matter
+```
+
+```{r}
+# What does scale_fill_manual do?
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density() +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+# it fills the color to differentiate the three category of the historical variable
+```
+```{r}
+# What does alpha = 0.5 do?
+# Play around with different values of alpha, between 0 and 1
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+# it shows to what extent the density lines are overlapping toward each other, sort of like transparency.
+```
+
+
+```{r}
+# What does facet_wrap do?!
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density() +
+  scale_fill_manual(values = c("blue", "purple", "red")) +
+  facet_wrap(~historical)
+# it divides the density plot by the categorical variable historical.
+```
+
+```{r}
+# Let's try a similar grouping strategy with a histogram instead of density plot.
+# Why is this terrible?
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_histogram(color = "white") +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+# histogram make the historical variable chaotic by putting up together, we can hardly tell what percetage of count each historical have for repub_pct_20.
+```
+Exercise 10: Reflect
+We’ve now learned 3 (of many) ways to visualize the relationship between a quantitative and categorical variable: side-by-side violins, boxplots, and density plots.
+
+Which do you like best?
+density plot.
+What is one pro of density plots relative to boxplots?
+the trend are really hard to be seen, what you can get is only the median qr1,qr3,minimum,maximum
+What is one con of density plots relative to boxplots?
+it will be better to reveal relationships with one categorical and one numerical, which is really simple.
+
+Exercise 11: Categorical vs Categorical: Intuition Check
+Finally, let’s simply explore who won each county in 2020 (winner_20) and how this breaks down by historical voting trends in the state. That is, let’s explore the relationship between 2 categorical variables. Following the same themes as above, we can utilize grouping features such as fill/color or facets to distinguish between different categories of winner_20 and historical.
+
+```{r}
+# A stacked bar plot
+# How are the "historical" and "winner_20" variables mapped to the plot, i.e. what roles do they play?
+ggplot(elections, aes(x = historical, fill = winner_20)) +
+  geom_bar()
+```
+
+```{r}
+# A faceted bar plot
+ggplot(elections, aes(x = winner_20)) +
+  geom_bar() +
+  facet_wrap(~historical)
+```
+```{r}
+# A side-by-side bar plot
+# Note the new argument to geom_bar
+ggplot(elections, aes(x = historical, fill = winner_20)) +
+  geom_bar(position = "dodge")
+```
+
+```{r}
+# A proportional bar plot
+# Note the new argument to geom_bar
+ggplot(elections, aes(x = historical, fill = winner_20)) +
+  geom_bar(position = "fill")
+```
+
+part a:
+pros:it shows the composition of dem and repub in each historical categroy
+cons: but we can't see exact what number of counts of votes.
+
+part b: 
+the stacked box plot will be better for me, since it looks more prominent that we can see exact number of vote each categorical has, and also the percentage of votes each category have for state and politician, and what we only need to do is to adding them together. 
+
+
+
+
+
+
+
+
+
